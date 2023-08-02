@@ -2,14 +2,12 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.decorators.cache import cache_page
 
 from accounts.models import User
 from course.models import UserEnrollment
 from .models import Instructor
 
 
-@cache_page(60)
 def instructors(request):
     context = {
         'instructors': []

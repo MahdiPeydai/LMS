@@ -5,8 +5,6 @@ from django.contrib.auth import login as auth_login, logout as auth_logout, auth
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 
 from .forms import UserLoginForm, UserRegisterForm
 from checkout.models import Cart, CartItems
@@ -15,7 +13,6 @@ import jwt
 
 
 class Register(View):
-    @method_decorator(cache_page(60))
     def get(self, request):
         form = UserRegisterForm()
         return render(request, 'accounts/register.html', {'form': form})
@@ -29,7 +26,6 @@ class Register(View):
 
 
 class Login(View):
-    @method_decorator(cache_page(60))
     def get(self, request):
         form = UserLoginForm()
         next_url = request.GET.get('next')

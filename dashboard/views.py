@@ -5,16 +5,12 @@ from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import cache_page
-from django.views.decorators.vary import vary_on_cookie
 
 from .forms import UserUpdateForm, CustomPasswordChangeForm
 from course.models import Course, UserEnrollment
 
 
 @login_required
-@cache_page(60)
-@vary_on_cookie
 def dashboard(request):
     user = request.user
     context = {
@@ -72,8 +68,6 @@ class ProfileEdit(View):
 
 class PasswordChange(View):
     @method_decorator(login_required)
-    @method_decorator(cache_page(600))
-    @method_decorator(vary_on_cookie)
     def get(self, request):
         user = request.user
         form = CustomPasswordChangeForm(user=user)
