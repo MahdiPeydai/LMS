@@ -1,0 +1,71 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    ثبت سفارش
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block main %}
+    {% cache checkout payment.id %}
+    <div class="d-flex justify-content-center">
+        <div class="col-lg-6 col-md-12">
+            <div class="your-order mb-30 ">
+                <h3>سفارش شما</h3>
+                <div class="your-order-table table-responsive">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th class="product-name">دوره</th>
+                            <th class="product-total">قیمت</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for course in courses %}
+                        <tr class="cart_item">
+                            <td class="product-name">{{ course.course.name }}</td>
+                            <td class="product-total"><span class="amount">{{ course.price }}</span><span class="m-0 mx-1">تومان</span></td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                        <tfoot>
+                        <tr class="cart-subtotal">
+                            <th>مبلغ نهایی</th>
+                            <td><strong><span class="amount">{{ total }}</span></strong><span class="m-0 mx-1">تومان</span></td>
+                        </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="payment-method">
+                    <div class="accordion" id="checkoutAccordion">
+                        <div class="accordion-item">
+                            <h4 class="accordion-header" id="checkoutOne">
+                                <button type="button" data-bs-toggle="collapse" data-bs-target="#bankOne" aria-expanded="true" aria-controls="bankOne">
+                                    پرداخت اینترنتی <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                            </h4>
+                            <div id="bankOne" class="accordion-collapse collapse show" aria-labelledby="checkoutOne" data-bs-parent="#checkoutAccordion">
+                                <div class="accordion-body">
+                                    پرداخت را با استفاده از حساب بانکی خود از طریق درگاه های پرداخت اینترنی انجام دهید.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="order-button-payment mt-20">
+                        <a href="{% url 'payment_data_post' payment_id=payment.id %}" class="tp-btn btn">پرداخت</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endcache %}
+{% endblock %}

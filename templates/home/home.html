@@ -1,0 +1,181 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block title %}
+    آموزش انلاین
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+
+    <!-- back to top start -->
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+    <!-- back to top end -->
+
+{% endblock %}
+
+{% block footer %}
+{% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block main %}
+    <!-- banner-area -->
+    <section class="banner-area fix p-relative">
+        <div class="banner-bg banner-bg-rainbow" data-background="{% static '/ephora/img/banner/banner-bg-2.jpg' %}">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-8">
+                        <div class="hero-content hero-content-black">
+                            <h2 class="hero-title-black mb-45">آموزش انلاین برای <br>زندگی‌ حرفه‌ای</h2>
+                            <div class="hero-btn">
+                                <a href="{% url 'courses' %}" class="tp-btn"><span class="h4 m-0">دوره ها</span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- banner-area-end -->
+
+    <!-- feature-area -->
+    <section class="feature-area pt-115 pb-90">
+        <div class="container">
+            <div class="tp-feature-cn">
+                <div class="row">
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="tpfea tp-feature-item text-center mb-30">
+                            <div class="tpfea__icon mb-25">
+                                <i class="fi fi-rr-paper-plane"></i>
+                            </div>
+                            <div class="tpfea__text">
+                                <h5 class="tpfea__title mb-5">دوره های متنوع</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="tpfea tp-feature-item text-center mb-30">
+                            <div class="tpfea__icon mb-25">
+                                <i class="fi fi-rr-user"></i>
+                            </div>
+                            <div class="tpfea__text">
+                                <h5 class="tpfea__title mb-5">اساتید مجرب</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="tpfea tp-feature-item text-center mb-30">
+                            <div class="tpfea__icon mb-25">
+                                <i class="fi fi-rr-document"></i>
+                            </div>
+                            <div class="tpfea__text">
+                                <h5 class="tpfea__title mb-5">سطوح مختلف</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-6 col-md-6">
+                        <div class="tpfea tp-feature-item text-center mb-30">
+                            <div class="tpfea__icon mb-25">
+                                <i class="fi fi-rr-calendar"></i>
+                            </div>
+                            <div class="tpfea__text">
+                                <h5 class="tpfea__title mb-5">دسترسی دائمی</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- feature-area-end -->
+
+    <!-- course-area -->
+    <section class="course-area pt-115 pb-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-title text-center mb-65">
+                        <span class="tp-bline-stitle mb-15">دوره ها</span>
+                        <h2 class="tp-section-title mb-20">دوره های پرفروش</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex row justify-content-center">
+                {% for course in offer_courses %}
+                    <div class="col-xl-4 col-lg-6 col-md-8">
+                        <div class="tpcourse mb-40">
+                            <div class="tpcourse__thumb p-relative w-img fix">
+                                <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 400px"></a>
+                            </div>
+                            <div class="tpcourse__content-2">
+                                <div class="tpcourse__category mb-10">
+                                    <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                        {% for category in course.categories %}
+                                            <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__ava-title mb-15">
+                                    <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ course.course.name }}</a></h4>
+                                </div>
+                                <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                    <ul class="d-flex align-items-center">
+                                        <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course.course_enrolled_users }} دانشجو</span></li>
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                    <div class="tpcourse__pricing d-flex">
+                                        <p class="price-title">{{ course.course.price }}</p>
+                                        <h4 class="mx-1 my-0">تومان</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <div class="course-btn mt-20"><a class="tp-btn" href="{% url 'courses' %}"><span class="h4">همه دوره ها</span></a></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- course-area-end -->
+
+    <!-- suitable-area -->
+    <section class="suitable-area pb-90 m-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <div class="section-title mb-60">
+                        <span class="tp-sub-title mb-25">ملحق شوید</span>
+                        <h2 class="tp-section-title">ایا میخواهید در تیم اساتید آموزش انلاین باشید؟</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="col-xl-6">
+                    <div class="tp-suit mb-30 d-flex justify-content-between">
+                        <div class="tp-suit__content">
+                            <h4 class="tp-suit__title">ایا میخواهید<br><span>آموزش بدهید</span>؟</h4>
+                            <p class="h5">به تیم اساتید آموزش انلاین بپیوندید.</p>
+                            <div class="tp-suit__btn pt-5">
+                                <a href="{% url 'add_instructor_group' %}" class="tp-border-btn"><span class="h4">حالا بپویوندید</span></a>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <img src="{% static 'ephora/img/bg/suit-bg-01.jpg' %}" alt="suitable-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- suitable-area-end -->
+{% endblock %}

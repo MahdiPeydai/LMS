@@ -1,0 +1,84 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    پرداخت |
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block main %}
+    {% if transaction.status == 'successful' %}
+        <div class="d-flex justify-content-center my-5">
+            <div class="payment_success_box w-50 text-center p-5">
+                <i class="fa-solid fa-money-check-dollar fa-10x text-success"></i>
+                <h1 class="my-4">{{ transaction.details }}</h1>
+                <h4>
+                    شماره سفارش شما Beh-{{ transaction.payment.order.id }} می‌باشد
+                </h4>
+            </div>
+        </div>
+    {% else %}
+        <div class="d-flex justify-content-center my-5">
+            <div class="payment_success_box w-50 text-center p-5">
+                <i class="fa-solid fa-xmark-circle fa-beat fa-10x text-danger"></i>
+                <h3 class="my-4">{{ transaction.details }}</h3>
+            </div>
+        </div>
+    {% endif %}
+    {% cache offer_courses %}
+    <section class="course-area my-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-title mb-65">
+                        <h2 class="tp-section-title mb-20">دوره های پرفروش</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for course in offer_courses %}
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="tpcourse mb-40">
+                            <div class="tpcourse__thumb p-relative w-img fix">
+                                <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 300px"></a>
+                            </div>
+                            <div class="tpcourse__content-2">
+                                <div class="tpcourse__category mb-10">
+                                    <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                        {% for category in course.categories %}
+                                            <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__ava-title mb-15">
+                                    <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ course.course.name }}</a></h4>
+                                </div>
+                                <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                    <ul class="d-flex align-items-center">
+                                        <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course.course_enrolled_users }} دانشجو</span></li>
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                    <div class="tpcourse__pricing d-flex">
+                                        <p class="price-title">{{ course.course.price }}</p>
+                                        <h4 class="mx-1 my-0">تومان</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endcache %}
+{% endblock %}

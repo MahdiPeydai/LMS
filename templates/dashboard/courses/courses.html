@@ -1,0 +1,41 @@
+{% extends 'layout/dashboard/dashboard.html' %}
+
+{% load static %}
+
+{% block title %}
+    داشبورد | دوره های من
+{% endblock %}
+
+{% block dashboard_content %}
+    <div class="d-flex row justify-content-center justify-content-md-start">
+        {% for course in courses %}
+            <div class="col-8 col-sm-7 col-md-6 col-lg-4 col-xl-3">
+                <div class="tpcourse mb-40">
+                    <div class="tpcourse__thumb p-relative w-img fix">
+                        <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 300px"></a>
+                    </div>
+                    <div class="tpcourse__content-2">
+                        <div class="tpcourse__category mb-10">
+                            <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                {% for category in course.categories %}
+                                    <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <div class="tpcourse__ava-title mb-15">
+                            <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ course.course.name }}</a></h4>
+                        </div><hr>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="mx-1">
+                                <p class="m-0 h6">مدرس <a href="{% url 'instructor_profile' instructor_id=course.instructor.id %}">{{ course.course.instructor.user.first_name }} {{ course.course.instructor.user.last_name }}</a></p>
+                            </div>
+                            <div>
+                                <a href="{% url 'instructor_profile' instructor_id=course.instructor.id %}"><img src="{{ course.instructor.image.url }}" alt="" style="width: 50px; height: 50px; border-radius: 50%"></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

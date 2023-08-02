@@ -1,0 +1,212 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    دوره ها
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'courses.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+    <!-- course-list-area -->
+    <section class="course-list-area pb-120">
+        <div class="m-1">
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <div class="section-title mb-60">
+                        <h2 class="tp-section-title tp-sub-title-box">دوره های آموزش انلاین</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 d-flex row m-0 mb-20">
+                <div class="col-lg-4 col-md-12 mb-60">
+                    <form method="post" action="{% url 'courses' %}" class="course-sidebar">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center mb-50">
+                            <h3>فیلتر ها</h3>
+                        </div>
+                        <!-- categories -->
+                        <div class="course-sidebar__widget mb-50">
+                            <div class="course-sidebar__info c-info-list">
+                                <h4 class="tp-section-title tp-sub-title-box h4 mb-35">دسته بندی</h4>
+                                {% for category in categories %}
+                                <div class="form-check">
+                                    <input name="categories" {% if category.id in selected_category %}checked{% endif %} class="form-check-input" type="checkbox" value="{{ category.id }}" id="category{{ category.id }}">
+                                    <label class="form-check-label" for="category{{ category.id }}">
+                                        {{ category.name }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- level -->
+                        <div class="course-sidebar__widget mb-50">
+                            <div class="course-sidebar__info c-info-list">
+                                <h4 class="tp-section-title tp-sub-title-box h4 mb-35">سطح</h4>
+                                {% for level, label in levels %}
+                                <div class="form-check">
+                                    <input name="levels" {% if level in selected_levels %}checked{% endif %} class="form-check-input" type="checkbox" value="{{ level }}" id="level{{ level }}">
+                                    <label class="form-check-label" for="level{{ level }}">
+                                        {{ label }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- duration -->
+                        <div class="course-sidebar__widget mb-50">
+                            <div class="course-sidebar__info c-info-list">
+                                <label class="tp-section-title tp-sub-title-box h4 mb-35" for="durationRange">مدت زمان(ساعت)</label>
+                                <div class="form-check p-0">
+                                    <div class="d-flex align-items-center">
+                                        <p class="price-title col d-inline-flex justify-content-center mx-1 my-0" id="minDurationValue">1</p>
+                                        <input class="col-6" type="range" id="durationRange" name="duration" min="1" max="200" step="1" value="{{ selected_duration }}">
+                                        <p class="price-title col d-flex justify-content-center mx-1 my-0" id="maxDurationValue">200</p>
+                                    </div>
+                                </div>
+                                <p><span class="mx-1" id="durationValue"></span>ساعت</p>
+                            </div>
+                        </div>
+
+                        <!-- price -->
+                        <div class="course-sidebar__widget mb-50">
+                            <div class="course-sidebar__info c-info-list">
+                                <label class="tp-section-title tp-sub-title-box h4 mb-35" for="priceRange">قیمت(تومان)</label>
+                                <div class="form-check p-0">
+                                    <div class="d-flex align-items-center">
+                                        <p class="price-title col d-inline-flex justify-content-center mx-1 my-0" id="minPriceValue">50000</p>
+                                        <input class="col-6 col-lg-5 col-xl-6" type="range" id="priceRange" name="price" min="50000" max="1000000" step="50000" value="{{ selected_price }}">
+                                        <p class="price-title col d-flex justify-content-center mx-1 my-0" id="maxPriceValue">1000000</p>
+                                    </div>
+                                </div>
+                                <p><span class="mx-1 price-title" id="priceValue"></span>تومان</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center mb-50">
+                            <button type="submit" class="btn-secondary px-5 py-3 rounded-3">اعمال فیلتر ها</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-lg-8 col-md-12">
+                    {% for course in courses %}
+                        {% cache 60 course_in_courses course.course.id %}
+                        <div class="tpcourse tp-list-course">
+                            <div class="d-flex row g-0">
+                                <div class="col-xl-4 course-thumb-width">
+                                    <div class="tpcourse__thumb p-relative w-img fix">
+                                        <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb"></a>
+                                    </div>
+                                </div>
+                                <div class="col-xl-8  course-text-width">
+                                    <div class="course-list-content">
+                                        <div class="tpcourse__ava-title mb-15">
+                                            <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ course.course.name }}</a></h4>
+                                        </div>
+                                        <div class="tpcourse__category col-12 d-flex mb-10">
+                                            <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                                {% for category in course.categories %}
+                                                    <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                            <ul class="d-flex align-items-center">
+                                                <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course.course_enrolled_users }} دانشجو</span></li>
+                                            </ul>
+                                        </div>
+                                        <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                            <div class="tpcourse__pricing d-flex">
+                                                <p class="price-title">{{ course.course.price }}</p>
+                                                <h4 class="mx-1 my-0">تومان</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endcache %}
+                    {% endfor %}
+                    <div class="basic-pagination my-4">
+                        <nav>
+                            <ul>
+                                {% if current_page.has_previous %}
+                                <li>
+                                    <a href="?page={{ current_page.previous_page_number }}">
+                                        <i class="far fa-angle-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% for page_num in current_page.paginator.page_range %}
+                                    {% if page_num == current_page.number %}
+                                        <li>
+                                        <span class="current">{{ current_page.number }}</span>
+                                        </li>
+                                    {% else %}
+                                        <li>
+                                            <a href="?page={{ page_num }}">{{ page_num }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if current_page.has_next %}
+                                <li>
+                                    <a href="?page={{ current_page.next_page_number }}">
+                                        <i class="far fa-angle-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- course-list-area-end -->
+    {% cache 60 suitable-area %}
+    <!-- suitable-area -->
+    <section class="suitable-area pb-90 m-5">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-lg-12">
+                    <div class="section-title mb-60">
+                        <span class="tp-sub-title mb-25">ملحق شوید</span>
+                        <h2 class="tp-section-title">ایا میخواهید در تیم اساتید آموزش انلاین باشید؟</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="col-xl-6">
+                    <div class="tp-suit mb-30 d-flex justify-content-between">
+                        <div class="tp-suit__content">
+                            <h4 class="tp-suit__title">ایا میخواهید<br><span>آموزش بدهید</span>؟</h4>
+                            <p class="h5">به تیم اساتید آموزش انلاین بپیوندید.</p>
+                            <div class="tp-suit__btn pt-5">
+                                <a href="{% url 'add_instructor_group' %}" class="tp-border-btn">حالا بپویوندید</a>
+                            </div>
+                        </div>
+                        <div class="col-8">
+                            <img src="{% static 'ephora/img/bg/suit-bg-01.jpg' %}" alt="suitable-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- suitable-area-end -->
+    {% endcache %}
+{% endblock %}

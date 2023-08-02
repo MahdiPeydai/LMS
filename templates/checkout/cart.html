@@ -1,0 +1,136 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    سبد خرید
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script>
+        const empty_cart_url = '{% url "cart" %}';
+        let courses = [];
+        {% for course in courses %}
+            courses[{{ course.id }}] = {
+                price: {{ course.price }},
+            }
+        {% endfor %}
+    </script>
+    <script src="{% static 'cart.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+    {% if status == 'empty' %}
+        {% cache 60 empty_cart %}
+        <div class="d-flex justify-content-center my-5">
+            <div class="card_empty_box col-12 col-md-6 text-center p-5">
+                <i class="fa-solid fa-cart-plus fa-10x" style="color: #245D51;"></i>
+                <h2 class="my-4">سبد خریدت خالیه هنوز</h2>
+                <h3>
+                    از <a href="{% url 'home' %}" class="text-decoration-none" style="color: #245D51;">اینجا</a> می‌تونی وارد صفحه اصلی فروشگاه بشی و دنبال چیزی که می‌خوای بگردی!
+                </h3>
+            </div>
+        </div>
+        <section class="course-area my-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="section-title mb-65">
+                            <h2 class="tp-section-title mb-20">دوره های پرفروش</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    {% for course in offer_courses %}
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <div class="tpcourse mb-40">
+                            <div class="tpcourse__thumb p-relative w-img fix">
+                                <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 300px"></a>
+                            </div>
+                            <div class="tpcourse__content-2">
+                                <div class="tpcourse__category mb-10">
+                                    <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                        {% for category in course.categories %}
+                                            <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__ava-title mb-15">
+                                    <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ course.course.name }}</a></h4>
+                                </div>
+                                <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                    <ul class="d-flex align-items-center">
+                                        <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course.course_enrolled_users }} دانشجو</span></li>
+                                    </ul>
+                                </div>
+                                <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                    <div class="tpcourse__pricing d-flex">
+                                        <p class="price-title">{{ course.course.price }}</p>
+                                        <h4 class="mx-1 my-0">تومان</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        {% endcache %}
+    {% else %}
+        {% cache 60 full_cart cart.id %}
+        <section class="cart-area pt-100 pb-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <form action="#">
+                            <div class="table-content table-responsive">
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        <th class="product-thumbnail">تصویر</th>
+                                        <th class="cart-product-name">دوره</th>
+                                        <th class="product-price">قیمت</th>
+                                        <th class="product-remove">حذف</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for course in courses %}
+                                    <tr id="course{{ course.id }}">
+                                        <td class="product-thumbnail"><a class="col-12" href="{% url 'course_detail' course_id=course.id %}"><img src="{{ course.image.url }}" alt="" style="width: 100px"></a></td>
+                                        <td class="product-name"><a href="{% url 'course_detail' course_id=course.id %}">{{ course.name }}</a></td>
+                                        <td class="product-price"><div class="d-flex justify-content-center"><span class="amount price-title">{{ course.price }}</span><p class="m-0 mx-1">تومان</p></div></td>
+                                        <td class="product-remove"><div class="cart_item_destroy btn" data-course_id="{{ course.id }}" data-url="{% url 'cart_item_destroy' course_id=course.id %}"><i class="fa fa-times"></i></div></td>
+                                    </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-md-5 ">
+                                    <div class="cart-page-total">
+                                        <h2>سبد خرید</h2>
+                                        <ul class="mb-20">
+                                            <li class="d-flex p-4"><span class="h5 m-0">قیمت کل :</span><span id="cart_total_price" class="price-title h5 m-0 mx-1"></span><span class="h5 m-0 mx-1">تومان</span></li>
+                                        </ul>
+                                        <a class="tp-btn" href="{% url 'checkout' %}"><span class="h6">ثبت سفارش</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        {% endcache %}
+    {% endif %}
+{% endblock %}

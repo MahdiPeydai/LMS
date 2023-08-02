@@ -1,0 +1,4 @@
+/.env
+/static/dist/
+node_modules
+venv

@@ -1,0 +1,82 @@
+{% extends 'layout/layout.html' %}
+
+{% load cache %}
+
+{% block header %}
+{% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+{% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block main %}
+    <div class="m-1 d-flex">
+        {% cache 60 dashboard_sidbar %}
+        <div class="col-2  side_bar px-sm-1 px-0 shadow rounded-3">
+            <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
+                <a href="{% url 'profile' %}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
+                    <div class="d-flex justify-content-center">
+                        <i class="fi fi-br-portrait h2 mx-2"></i><br>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <p class="h4 ms-1 my-0 d-none d-lg-block text-center">اطلاعات حساب</p>
+                    </div>
+                </a>
+            </div>
+            <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
+                <a href="{% url 'user_courses' %}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
+                    <div class="d-flex justify-content-center">
+                        <i class="fi fi-rr-book h2 mx-2"></i><br>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <p class="h4 ms-1 my-0 d-none d-lg-block text-center">دوره‌های من</p>
+                    </div>
+                </a>
+            </div>
+            {% if is_instructor %}
+            <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
+                <a href="{% url 'instructor_course_report' %}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
+                    <div class="d-flex justify-content-center">
+                        <i class="fi fi-rr-calculator h2 mx-2"></i><br>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <p class="h4 ms-1 my-0 d-none d-lg-block text-center">گزارش دوره‌ها</p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+            <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
+                <a href="{% url 'password_change' %}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
+                    <div class="d-flex justify-content-center">
+                        <i class="fi fi-sr-lock h2 mx-2"></i><br>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <p class="h4 ms-1 my-0 d-none d-lg-block text-center">تغییر رمزعبور</p>
+                    </div>
+                </a>
+            </div>
+            <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
+                <a href="{% url 'logout'%}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
+                    <div class="d-flex justify-content-center">
+                        <i class="fi fi-br-sign-out-alt h2 mx-2"></i><br>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <p class="h4 ms-1 my-0 d-none d-lg-block text-center">خروج</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {% endcache %}
+        <div class="col-10 p-2">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="p-3 rounded-3 shadow">
+                        <p class="{% if message.tags == 'error' %}text-danger{% else %}text-success{% endif %} m-0">{{ message }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block dashboard_content %}{% endblock %}
+        </div>
+    </div>
+{% endblock %}

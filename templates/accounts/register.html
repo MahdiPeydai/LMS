@@ -1,0 +1,33 @@
+{% extends 'layout/layout.html' %}
+
+{% block title %}
+    ثبت نام
+{% endblock %}
+
+{% block main %}
+    <section class="login-area pt-50 pb-50">
+        <div class="container">
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8 d-flex justify-content-center">
+                    <div class="basic-login col-10 col-sm-8 col-md-6">
+                        <h3 class="text-center mb-60">ثبت نام</h3>
+                        {% if messages %}
+                            {% for message in messages %}
+                            <p class="{% if message.tags == 'error' %}text-danger{% else %}text-success{% endif %} ">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                        <form action="{% url 'register' %}" method="post">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button class="tp-btn w-100">ثبت نام</button>
+                            <div class="or-divide"><span>یا</span></div>
+                            <a href="{% url 'login' %}" class="tp-border-btn w-100">ورود</a>
+                            </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% endcache %}

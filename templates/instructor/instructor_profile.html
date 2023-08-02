@@ -1,0 +1,122 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    مدرس | {{ instructor.user.first_name }} {{ instructor.user.last_name }}
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+
+    <!-- back to top start -->
+    <div class="progress-wrap">
+        <svg class="progress-circle svg-content" width="100%" height="100%" viewBox="-1 -1 102 102">
+            <path d="M50,1 a49,49 0 0,1 0,98 a49,49 0 0,1 0,-98" />
+        </svg>
+    </div>
+    <!-- back to top end -->
+
+{% endblock %}
+
+{% block footer %}
+{% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block main %}
+    {% cache 60 instructor_profile %}
+    <section class="instructor-portfolio pt-120 pb-80">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-4 col-lg-5">
+                    <div class="instruc-sidebar mb-40">
+                        <div class="isntruc-side-thumb mb-30">
+                            <img src="{{ instructor.image.url }}" alt="instructor-thumb">
+                        </div>
+                        <div class="instructor-sidebar-widget">
+                            <div class="isntruc-side-content">
+                                <h4 class="side-instructor-title text-center mb-15">{{ instructor.user.first_name }} {{ instructor.user.last_name }}</h4>
+                                <p>{{ instructor.short_description | safe }}</p>
+                            </div>
+                            <div class="cd-information instruc-profile-info mb-35">
+                                <ul dir="ltr">
+                                    <li><i class="fi fi-rr-briefcase"></i> <label>شغل</label> <span>{{ instructor.job_title }}</span></li>
+                                    <li><i class="fi fi-rr-phone-call"></i> <label>تلفن</label> <span>{{ instructor.user.phone }}</span></li>
+                                    <li><i class="fi fi-rr-envelope"></i> <label>ایمیل</label> <span>{{ instructor.user.email }}</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-8 col-lg-7">
+                    <div class="instructor-main-content ml-30 mb-40">
+                        <div class="instruc-biography mb-50">
+                            <P >{{ instructor.biography | safe }}</P>
+                        </div>
+                        <div class="instruc-statics mb-20">
+                            <div class="row">
+                                <div class="col-xl-4 col-lg-6 col-md-4">
+                                    <div class="isntruc-tp-counter mb-30">
+                                        <h4 dir="ltr" class="isntruc-tp-counter__title p-relative"><span class="counter">{{ courses_enrolled }}</span></h4>
+                                        <p dir="ltr">دانشجو</p>
+                                    </div>
+                                </div>
+                                <div class="col-xl-4 col-lg-6 col-md-4">
+                                    <div class="isntruc-tp-counter mb-30">
+                                        <h4 dir="ltr" class="isntruc-tp-counter__title p-relative"><span class="counter">{{ courses_number }}</span></h4>
+                                        <p dir="ltr">دوره ها</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="instructor-tp-course">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="instruc-biography">
+                            <h2 class="ins-bio-title mb-35">دوره ها</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 d-flex row m-0">
+                    {% for course in courses %}
+                        <div class="col-8 col-md-6 col-lg-4 p-1">
+                            <div class="tpcourse h-100 mb-40">
+                                <div class="tpcourse__thumb w-img fix">
+                                    <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 300px"></a>
+                                </div>
+                                <div class="tpcourse__content-2">
+                                    <div class="tpcourse__category col-12 d-flex mb-10">
+                                        <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                            {% for category in course.categories %}
+                                                <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="tpcourse__ava-title mb-15">
+                                        <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=course.course.id %}">{{ related_course.course.name }}</a></h4>
+                                    </div>
+                                    <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                        <ul class="d-flex align-items-center">
+                                            <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course.course_enrolled_users }} دانشجو</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                        <div class="tpcourse__pricing d-flex">
+                                            <p class="price-title">{{ course.course.price }}</p>
+                                            <h4 class="mx-1 my-0">تومان</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endcache %}
+{% endblock %}

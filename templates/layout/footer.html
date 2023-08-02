@@ -1,0 +1,85 @@
+{% load static %}
+{% load cache %}
+
+{% cache 60000 footer %}
+<!-- footer-area -->
+<footer class="mt-50">
+    <div class="footer-bg theme-bg bg-bottom" data-background="{% static 'ephora/img/bg/shape-bg-02.png' %}">
+        <div class="f-border pt-115 pb-70">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xl-2 col-md-4">
+                        <div class="footer-widget footer-col-1 mb-50">
+                            <div class="footer-widget__text mb-35">
+                                <h3 class="footer-widget__title">آموزش انلاین</h3>
+                            </div>
+                            <div class="footer-widget__link">
+                                <ul>
+                                    <li><a href="">درباره ما</a></li>
+                                    <li><a href="">بلاگ</a></li>
+                                    <li><a href="">فرصت های شغلی</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-4">
+                        <div class="footer-widget footer-col-2 mb-50">
+                            <div class="footer-widget__text mb-35">
+                                <h3 class="footer-widget__title">دسترسی سریع</h3>
+                            </div>
+                            <div class="footer-widget__link">
+                                <ul>
+                                    <li><a href="{% url 'home' %}">صحفه نخست</a></li>
+                                    <li><a href="{% url 'register' %}">عضویت در سایت</a></li>
+                                    <li><a href="{% url 'login' %}">ورود به سایت</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-md-4">
+                        <div class="footer-widget footer-col-3 mb-50">
+                            <div class="footer-widget__text mb-35">
+                                <h3 class="footer-widget__title">پشتیبانی</h3>
+                            </div>
+                            <div class="footer-widget__link">
+                                <ul>
+                                    <li><a href="">اطلاعات تماس</a></li>
+                                    <li><a href="">مرکز آموزش</a></li>
+                                    <li><a href="">تالار گفتمان</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-4 col-lg-6 col-md-8">
+                        <div class="footer-widget footer-col-4  mb-50">
+                            <div class="footer-widget__social d-flex align-items-center">
+                                <a href=""><i class="fa-brands fa-facebook-f"></i></a>
+                                <a href=""><i class="fa-brands fa-youtube"></i></a>
+                                <a href=""><i class="fa-light fa-basketball"></i></a>
+                                <a href=""><i class="fa-brands fa-whatsapp"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        <div class="f-copyright pt-60 pb-30">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-5">
+                        <div class="f-copyright__logo mb-30">
+                            <a href="{% url 'home' %}"><img src="{% static 'ephora/img/logo/Logo.png' %}" alt="logo"></a>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="f-copyright__text text-md-end mb-30">
+                            <span>Copyright©Uxaction 2022, All Rights Reserved</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer-area-end -->
+{% endcache %}

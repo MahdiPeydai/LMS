@@ -1,0 +1,211 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+{% load cache %}
+
+{% block title %}
+    دوره | {{ course.name }}
+{% endblock %}
+
+{% block header %}
+    {% include 'layout/header.html' %}
+{% endblock %}
+
+{% block footer %}
+    {% include 'layout/footer.html' %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+    <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+    <script>
+        const course_id = {{ course.id }};
+        const cart_item_store_url = '{% url 'cart_item_store' %}';
+        const cart_item_destroy_url = '{% url 'cart_item_destroy' course_id=course.id %}';
+    </script>
+    <script src="{% static 'course_detail.js' %}"></script>
+{% endblock %}
+
+{% block main %}
+    {% cache 5 course_detail course.id %}
+    <section class="c-details-area pt-2 pb-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-12">
+                    <div class="c-details-wrapper mr-25">
+                        <div class="c-details-thumb p-relative mb-40">
+                            <img src="{{ course.image.url }}" alt="details-bg" style="height: 500px; width: 100%">
+                            <div class="c-details-ava d-flex align-items-center justify-content-center col-3">
+                                <div class="col-auto mx-1">
+                                    <span class="m-0">مدرس <a href="">{{ course.instructor.user.first_name }} {{ course.instructor.user.last_name }}</a></span>
+                                </div>
+                                <div class="col-5">
+                                    <img src="{{ course.instructor.image.url }}" alt="" style="width: 80px; height: 80px; border-radius: 50%">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-details-content mb-45">
+                            <div class="tpcourse__category mb-15">
+                                <ul class="tpcourse__price-list d-flex align-items-center">
+                                    {% for category in categories %}
+                                    <li><a href="#">{{ category.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="tpcourse__ava-title mb-25">
+                                <h4 class="c-details-title">{{ course.name }}</h4>
+                            </div>
+                            <div class="tpcourse__meta course-details-list">
+                                <ul class="d-flex align-items-center">
+                                    <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ course_enrolled_users }} دانشجو</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="c-details-about mb-40">
+                            <h5 class="tp-c-details-title mb-20">توضیحات</h5>
+                            {{ course.description | safe }}
+                        </div>
+                        <div class="cor-details-instructor mb-40">
+                            <h4 class="tp-c-details-title mb-40">مدرس</h4>
+                            <div class="course-instructor-details d-flex f-wrap align-items-center">
+                                <div class="course-avata mx-2">
+                                    <img src="{{ course.instructor.image.url }}" alt="">
+                                </div>
+                                <div class="course-avatar-details">
+                                    <h5 class="c-avata-title mb-10">{{ course.instructor.user.first_name }} {{ course.instructor.user.last_name }}</h5>
+                                    <p>{{ course.instructor.job_title }}</p>
+                                    <div class="c-details-list mb-5">
+                                    </div>
+                                    <div class="c-details-stu">
+                                        <ul>
+                                            <li class="d-flex align-items-center"><img src="{% static 'ephora/img/icon/c-details-02.png' %}" alt="" class="m-1"> <span class="m-1">{{ instructor_enrolled_users }} دانشجو</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2">
+                                {{ course.instructor.short_description | safe }}
+                            </div>
+                        </div>
+                        <div class="c-details-review pb-15">
+                            <div class="c-review-title-wrapper">
+                                <h5 class="c-review-title mb-40">نظرات</h5>
+                            </div>
+                            <div class="course-reviewer-item-wrapper">
+                            {% if reviews %}
+                                {% for review in reviews %}
+                                <div class="course-reviewer-item d-flex mb-25">
+                                    <div class="course-review-ava">
+                                        <img src="{% static 'ephora/img/icon/c-details-avata-01.png' %}" alt="">
+                                    </div>
+                                    <div class="course-review-content p-relative">
+                                        <h5 class="course-ava-title mb-15">{{ review.user.first_name }} {{ review.user.last_name }}</h5>
+                                        <div>
+                                            {{ review.message | safe }}
+                                        </div>
+                                        <div class="c-reviewer-time">
+                                            <span>{{ review.updated_at }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="course-reviewer-item d-flex mb-25 rounded-3 border border-2 px-4 py-5">
+                                    <h5 class="text-secondary m-0">تا الان نظری برای این دوره ثبت نشده.</h5>
+                                </div>
+                            {% endif %}
+                            </div>
+                            {% if is_enrolled %}
+                            <button type="button" data-bs-toggle="collapse" data-bs-target="#collapseForm" aria-expanded="false" aria-controls="collapseForm" class="btn btn-secondary"><span class="h5">نظر جدید</span></button>
+                            <form action="{% url 'review' course_id=course.id %}" method="post" class="collapse p-5" id="collapseForm">
+                                {% csrf_token %}
+                                {{ form.message }}
+                                <button type="submit" class="btn btn-outline-success"><span class="h5">ثبت</span></button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-12">
+                    <div class="c-details-sidebar">
+                        <div class="course-details-widget">
+                            {% if not is_enrolled %}
+                                <div class="cd-video-price">
+                                    <div class="d-flex justify-content-center my-4">
+                                        <h3 class="price-title text-center mb-15">{{ course.price }}</h3>
+                                        <h3 class="mx-1">تومان</h3>
+                                    </div>
+                                    <div class="cd-pricing-btn text-center mb-30">
+                                        <a href="{% url 'course_enroll' course_id=course.id %}" class="order_item_store tp-vp-btn-green btn">شرکت در دوره</a>
+                                        <div class="cart_item_destroy tp-vp-btn btn {% if not in_cart %}d-none{% endif %}">حذف از سبد خرید</div>
+                                        <div class="cart_item_store tp-vp-btn btn {% if in_cart %}d-none{% endif %}">افزودن به سبد خرید</div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="d-flex justify-content-center bg-success rounded-3 m-2 mb-55 py-4">
+                                    <h4 class="text-white m-0 text-center">این دوره در لیست دوره های شما هست</h4>
+                                </div>
+                            {% endif %}
+                            <div class="cd-information mb-35">
+                                <ul dir="ltr">
+                                    <li><i class="fi fi-rr-user"></i> <label>دانشجو</label> <span>{{ course_enrolled_users }}</span></li>
+                                    <li><i class="fa-light fa-clock-desk"></i> <label>مدت زمان</label> <span>{{ course.duration }} ساعت</span></li>
+                                    <li><i class="fi fi-sr-stats"></i> <label>سطح</label> <span>{{ course.get_level_display }}</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endcache %}
+
+    {% cache 60 related_courses course.id %}
+    <section class="course-area mb-80">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-title mb-65">
+                        <h2 class="tp-section-title mb-20">دوره های مرتبط</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                {% for related_course in related_courses %}
+                <div class="col-xl-4 col-lg-6 col-md-6">
+                    <div class="tpcourse mb-40">
+                        <div class="tpcourse__thumb p-relative w-img fix">
+                            <a href="{% url 'course_detail' course_id=related_course.course.id %}"><img src="{{ related_course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 400px"></a>
+                        </div>
+                        <div class="tpcourse__content-2">
+                            <div class="tpcourse__category mb-10">
+                                <ul class="tpcourse__price-list col-12 d-flex row p-0">
+                                    {% for category in related_course.categories %}
+                                        <li class="col-auto d-inline-flex mx-2 my-1 p-0"><a class="d-inline-flex text-nowrap">{{ category.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="tpcourse__ava-title mb-15">
+                                <h4 class="tpcourse__title tp-cours-title-color"><a href="{% url 'course_detail' course_id=related_course.course.id %}">{{ related_course.course.name }}</a></h4>
+                            </div>
+                            <div class="tpcourse__meta tpcourse__meta-gap pb-15 mb-15">
+                                <ul class="d-flex align-items-center">
+                                    <li class="m-1"><img src="{% static 'ephora/img/icon/c-meta-02.png' %}" alt=""> <span class="m-1">{{ related_course.course_enrolled_users }} دانشجو</span></li>
+                                </ul>
+                            </div>
+                            <div class="tpcourse__rating d-flex align-items-center justify-content-between">
+                                <div class="tpcourse__pricing d-flex">
+                                    <p class="price-title">{{ related_course.course.price }}</p>
+                                    <h4 class="mx-1 my-0">تومان</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endcache %}
+{% endblock %}
