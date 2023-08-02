@@ -1,7 +1,6 @@
 {% extends 'layout/layout.html' %}
 
 {% load static %}
-{% load cache %}
 
 {% block title %}
     مدرس | {{ instructor.user.first_name }} {{ instructor.user.last_name }}
@@ -25,7 +24,6 @@
 {% endblock %}
 
 {% block main %}
-    {% cache 60 instructor_profile %}
     <section class="instructor-portfolio pt-120 pb-80">
         <div class="container">
             <div class="row">
@@ -118,5 +116,4 @@
             </div>
         </div>
     </section>
-    {% endcache %}
 {% endblock %}

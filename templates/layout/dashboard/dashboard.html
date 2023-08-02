@@ -1,7 +1,5 @@
 {% extends 'layout/layout.html' %}
 
-{% load cache %}
-
 {% block header %}
 {% include 'layout/header.html' %}
 {% endblock %}
@@ -12,7 +10,6 @@
 
 {% block main %}
     <div class="m-1 d-flex">
-        {% cache 60 dashboard_sidbar %}
         <div class="col-2  side_bar px-sm-1 px-0 shadow rounded-3">
             <div class="d-flex justify-content-center justify-content-xl-start py-4 px-2">
                 <a href="{% url 'profile' %}" class="btn d-xl-flex px-0 text-decoration-none" style="color: #245D51">
@@ -67,7 +64,6 @@
                 </a>
             </div>
         </div>
-        {% endcache %}
         <div class="col-10 p-2">
             {% if messages %}
                 {% for message in messages %}

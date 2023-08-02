@@ -16,7 +16,6 @@
 {% endblock %}
 
 {% block main %}
-    {% cache checkout payment.id %}
     <div class="d-flex justify-content-center">
         <div class="col-lg-6 col-md-12">
             <div class="your-order mb-30 ">
@@ -67,5 +66,4 @@
             </div>
         </div>
     </div>
-    {% endcache %}
 {% endblock %}

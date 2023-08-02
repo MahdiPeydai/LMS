@@ -1,7 +1,6 @@
 {% extends 'layout/layout.html' %}
 
 {% load static %}
-{% load cache %}
 
 {% block title %}
     دوره | {{ course.name }}
@@ -27,7 +26,6 @@
 {% endblock %}
 
 {% block main %}
-    {% cache 5 course_detail course.id %}
     <section class="c-details-area pt-2 pb-50 mb-50">
         <div class="container">
             <div class="row">
@@ -159,9 +157,7 @@
             </div>
         </div>
     </section>
-    {% endcache %}
 
-    {% cache 60 related_courses course.id %}
     <section class="course-area mb-80">
         <div class="container">
             <div class="row">
@@ -207,5 +203,4 @@
             </div>
         </div>
     </section>
-    {% endcache %}
 {% endblock %}
