@@ -70,7 +70,6 @@ class Login(View):
                     for item in CartItems.objects.filter(cart__id=request.COOKIES.get('cart')).all():
                         item.cart = user_cart
                         item.save()
-                    Cart.objects.get(id=request.COOKIES.get('cart')).delete()
                 else:
                     user_cart = Cart(user=request.user)
                     user_cart.save()

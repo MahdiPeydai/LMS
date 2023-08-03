@@ -76,6 +76,7 @@ def checkout_page(request):
         course.delete()
     cart.delete()
     new_cart = Cart(user=user)
+    new_cart.save()
     cache.set(f'cart_session_{request.session.session_key}', new_cart)
 
     order_payment = Payment(order=new_order, total_amount=total)
