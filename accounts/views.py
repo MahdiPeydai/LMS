@@ -23,8 +23,11 @@ class Register(View):
                 auth_logout(request)
             user = form.save()
             auth_login(request, user)
-            user_cart = Cart.objects.get(id=request.COOKIES.get('cart'))
-            user_cart.user = user
+            if 'cart' in request.COOKIES:
+                user_cart = Cart.objects.get(id=request.COOKIES.get('cart'))
+                user_cart.user = user
+            else:
+                user_cart = Cart(user=user)
             user_cart.save()
             cache.set(f'cart_session_{request.session.session_key}', user_cart)
             response = HttpResponseRedirect(reverse('dashboard'))
