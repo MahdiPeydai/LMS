@@ -92,16 +92,13 @@
                             <div class="course-reviewer-item-wrapper">
                             {% if reviews %}
                                 {% for review in reviews %}
-                                <div class="course-reviewer-item d-flex mb-25">
-                                    <div class="course-review-ava">
-                                        <img src="{% static 'ephora/img/icon/c-details-avata-01.png' %}" alt="">
-                                    </div>
-                                    <div class="course-review-content p-relative">
+                                <div class="course-reviewer-item d-flex mb-25 p-3 rounded-3 shadow">
+                                    <div class="course-review-content">
                                         <h5 class="course-ava-title mb-15">{{ review.user.first_name }} {{ review.user.last_name }}</h5>
                                         <div>
                                             {{ review.message | safe }}
                                         </div>
-                                        <div class="c-reviewer-time">
+                                        <div class="">
                                             <span>{{ review.updated_at }}</span>
                                         </div>
                                     </div>
