@@ -4,8 +4,9 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 
-from .models import CartItems, Order, OrderItems, Payment, Transaction
+from .models import Cart, CartItems, Order, OrderItems, Payment, Transaction
 from course.models import Course, UserEnrollment
 from django.db.models import Count
 
@@ -13,12 +14,12 @@ import json
 import requests
 
 from utils.get_offer_courses import get_offer_courses
+from utils.get_cart import get_cart
 
 
 class CartItemStore(View):
-    @method_decorator(login_required)
     def post(self, request):
-        cart = request.cart
+        cart = get_cart(request)
         data = json.load(request)
         course_id = data['course_id']
         course = Course.objects.get(id=course_id)
@@ -29,9 +30,8 @@ class CartItemStore(View):
 
 
 class CartItemDestroy(View):
-    @method_decorator(login_required)
     def delete(self, request, course_id):
-        cart = request.cart
+        cart = get_cart(request)
         course = Course.objects.get(id=course_id)
         CartItems.objects.filter(cart=cart, course=course).delete()
 
@@ -40,7 +40,7 @@ class CartItemDestroy(View):
 
 
 def cart_page(request):
-    cart = request.cart
+    cart = get_cart(request)
     if not CartItems.objects.filter(cart=cart).exists():
         cart_status = 'empty'
         context = {
@@ -64,7 +64,7 @@ def cart_page(request):
 
 @login_required
 def checkout_page(request):
-    cart = request.cart
+    cart = get_cart(request)
     user = request.user
     new_order = Order(user=user)
     new_order.save()
@@ -75,6 +75,8 @@ def checkout_page(request):
         total += new_course.price
         course.delete()
     cart.delete()
+    new_cart = Cart(user=user)
+    cache.set(f'cart_session_{request.session.session_key}', new_cart)
 
     order_payment = Payment(order=new_order, total_amount=total)
     order_payment.save()
