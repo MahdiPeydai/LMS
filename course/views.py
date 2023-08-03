@@ -6,6 +6,7 @@ from .models import Course, Category, UserEnrollment, LEVEL_CHOICES
 from checkout.models import CartItems
 
 from utils.get_all_courses import get_all_courses
+from utils.get_cart import get_cart
 from .forms import ReviewForm
 
 from django.db.models import Q
@@ -122,10 +123,10 @@ def course_detail(request, course_id):
             'categories': related_course.categories.all(),
             'course_enrolled_users': UserEnrollment.objects.filter(course=related_course).count(),
         })
-    if request.user:
+    if request.user.is_authenticated:
         context['is_enrolled'] = UserEnrollment.objects.filter(user=request.user, course=course).exists()
 
-    cart = request.cart
+    cart = get_cart(request)
     if CartItems.objects.filter(cart=cart, course=course).exists():
         context['in_cart'] = True
 
