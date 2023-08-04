@@ -7,7 +7,9 @@ from django.contrib import messages
 from django.core.cache import cache
 
 from .forms import UserLoginForm, UserRegisterForm
+from django.contrib.contenttypes.models import ContentType
 from checkout.models import Cart, CartItems
+from accounts.models import Guest
 
 
 class Register(View):
@@ -25,10 +27,13 @@ class Register(View):
             else:
                 guest_cart = cache.get(f'cart_session_{request.session.session_key}')
                 cache.delete(f'cart_session_{request.session.session_key}')
+                Guest.objects.filter(session_id=request.session.session_key).delete()
+                request.session.flush()
             user = form.save()
             auth_login(request, user)
             if guest_cart:
-                guest_cart.user = user
+                guest_cart.user_type = ContentType.objects.get_for_model(user)
+                guest_cart.user_id = user.id
                 cache.set(f'cart_session_{request.session.session_key}', guest_cart)
             return redirect('dashboard')
         else:
@@ -57,8 +62,10 @@ class Login(View):
             else:
                 guest_cart = cache.get(f'cart_session_{request.session.session_key}')
                 cache.delete(f'cart_session_{request.session.session_key}')
+                Guest.objects.filter(session_id=request.session.session_key).delete()
+                request.session.flush()
             auth_login(request, user)
-            user_cart = Cart.objects.filter(user=user).first()
+            user_cart = Cart.objects.filter(user_type=ContentType.objects.get_for_model(user), user_id=user.id).first()
             if user_cart:
                 if guest_cart:
                     for item in CartItems.objects.filter(cart=guest_cart).all():
@@ -67,11 +74,12 @@ class Login(View):
                             item.save()
                         else:
                             item.delete()
-                    Cart.objects.get(id=request.COOKIES.get('cart')).delete()
+                    guest_cart.delete()
                 cache.set(f'cart_session_{request.session.session_key}', user_cart)
             else:
                 if guest_cart:
-                    guest_cart.user = user
+                    guest_cart.user_type = ContentType.objects.get_for_model(user)
+                    guest_cart.user_id = user.id
                     guest_cart.save()
                     cache.set(f'cart_session_{request.session.session_key}', guest_cart)
             return redirect(next_url)
