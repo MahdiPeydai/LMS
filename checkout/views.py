@@ -41,7 +41,7 @@ class CartItemDestroy(View):
 
 def cart_page(request):
     cart = cache.get(f'cart_session_{request.session.session_key}')
-    if not CartItems.objects.filter(cart=cart).exists():
+    if (not cart) or (not CartItems.objects.filter(cart=cart).exists()):
         cart_status = 'empty'
         context = {
             'offer_courses': get_offer_courses(),
