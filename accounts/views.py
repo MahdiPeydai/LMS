@@ -21,18 +21,16 @@ class Register(View):
             if request.user.is_authenticated:
                 cache.delete(f'cart_session_{request.session.session_key}')
                 auth_logout(request)
+                guest_cart = None
+            else:
+                guest_cart = cache.get(f'cart_session_{request.session.session_key}')
+                cache.delete(f'cart_session_{request.session.session_key}')
             user = form.save()
             auth_login(request, user)
-            if 'cart' in request.COOKIES:
-                user_cart = Cart.objects.get(id=request.COOKIES.get('cart'))
-                user_cart.user = user
-            else:
-                user_cart = Cart(user=user)
-            user_cart.save()
-            cache.set(f'cart_session_{request.session.session_key}', user_cart)
-            response = HttpResponseRedirect(reverse('dashboard'))
-            response.set_cookie('cart', '', max_age=0)
-            return response
+            if guest_cart:
+                guest_cart.user = user
+                cache.set(f'cart_session_{request.session.session_key}', guest_cart)
+            return redirect('dashboard')
         else:
             messages.error(request, 'دوباره سعی کنید')
             return redirect('register')
@@ -45,41 +43,38 @@ class Login(View):
         return render(request, 'accounts/login.html', {'form': form, 'next_url': next_url})
 
     def post(self, request):
-        if request.user.is_authenticated:
-            cache.delete(f'cart_session_{request.session.session_key}')
-            auth_logout(request)
+        next_url = request.POST['next_url']
+        if next_url == "None":
+            next_url = reverse('home')
         email = request.POST['email']
         password = request.POST['password']
         user = authenticate(request, email=email, password=password)
         if user:
-            next_url = request.POST['next_url']
-            if next_url == "None":
-                next_url = reverse('home')
+            if request.user.is_authenticated:
+                guest_cart = None
+                cache.delete(f'cart_session_{request.session.session_key}')
+                auth_logout(request)
+            else:
+                guest_cart = cache.get(f'cart_session_{request.session.session_key}')
+                cache.delete(f'cart_session_{request.session.session_key}')
             auth_login(request, user)
             user_cart = Cart.objects.filter(user=user).first()
             if user_cart:
-                cache.set(f'cart_session_{request.session.session_key}', user_cart)
-                if 'cart' in request.COOKIES:
-                    for item in CartItems.objects.filter(cart__id=request.COOKIES.get('cart')).all():
+                if guest_cart:
+                    for item in CartItems.objects.filter(cart=guest_cart).all():
                         if not CartItems.objects.filter(cart=user_cart, course=item.course).exists():
                             item.cart = user_cart
                             item.save()
+                        else:
+                            item.delete()
                     Cart.objects.get(id=request.COOKIES.get('cart')).delete()
-            else:
-                if 'cart' in request.COOKIES:
-                    user_cart = Cart.objects.get(id=request.COOKIES.get('cart'))
-                    user_cart.user = user
-                    user_cart.save()
-                    for item in CartItems.objects.filter(cart__id=request.COOKIES.get('cart')).all():
-                        item.cart = user_cart
-                        item.save()
-                else:
-                    user_cart = Cart(user=request.user)
-                    user_cart.save()
                 cache.set(f'cart_session_{request.session.session_key}', user_cart)
-            response = HttpResponseRedirect(next_url)
-            response.set_cookie('cart', '', max_age=0)
-            return response
+            else:
+                if guest_cart:
+                    guest_cart.user = user
+                    guest_cart.save()
+                    cache.set(f'cart_session_{request.session.session_key}', guest_cart)
+            return redirect(next_url)
         else:
             messages.error(request, 'ایمیل یا رمز عبور صحیح نمی‌باشد')
             return redirect('login')
