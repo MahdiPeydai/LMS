@@ -42,3 +42,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         db_table = 'user'
+
+
+class Guest(models.Model):
+    id = models.AutoField(primary_key=True)
+    session_id = models.TextField(max_length=50)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'guest'
+
+    def __str__(self):
+        return f"guest{self.id}"
