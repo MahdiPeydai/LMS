@@ -4,7 +4,7 @@ from checkout.models import Cart
 from accounts.models import Guest
 
 
-def get_cart(request):
+def get_or_create_cart(request):
     cart = cache.get(f'cart_session_{request.session.session_key}')
     if not cart:
         user = request.user
