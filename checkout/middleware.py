@@ -7,6 +7,6 @@ class GuestSession:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if not request.user.is_authenticated:
+        if not request.session.session_key:
             request.session.create()
         return response
