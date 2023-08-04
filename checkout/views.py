@@ -14,12 +14,12 @@ import json
 import requests
 
 from utils.get_offer_courses import get_offer_courses
-from utils.get_cart import get_cart
+from utils.get_or_create_cart import get_or_create_cart
 
 
 class CartItemStore(View):
     def post(self, request):
-        cart = get_cart(request)
+        cart = get_or_create_cart(request)
         data = json.load(request)
         course_id = data['course_id']
         course = Course.objects.get(id=course_id)
@@ -31,7 +31,7 @@ class CartItemStore(View):
 
 class CartItemDestroy(View):
     def delete(self, request, course_id):
-        cart = get_cart(request)
+        cart = cache.get(f'cart_session_{request.session.session_key}')
         course = Course.objects.get(id=course_id)
         CartItems.objects.filter(cart=cart, course=course).delete()
 
@@ -40,7 +40,7 @@ class CartItemDestroy(View):
 
 
 def cart_page(request):
-    cart = get_cart(request)
+    cart = cache.get(f'cart_session_{request.session.session_key}')
     if not CartItems.objects.filter(cart=cart).exists():
         cart_status = 'empty'
         context = {
@@ -64,7 +64,7 @@ def cart_page(request):
 
 @login_required
 def checkout_page(request):
-    cart = get_cart(request)
+    cart = cache.get(f'cart_session_{request.session.session_key}')
     user = request.user
     new_order = Order(user=user)
     new_order.save()
@@ -75,9 +75,7 @@ def checkout_page(request):
         total += new_course.price
         course.delete()
     cart.delete()
-    new_cart = Cart(user=user)
-    new_cart.save()
-    cache.set(f'cart_session_{request.session.session_key}', new_cart)
+    cache.delete(f'cart_session_{request.session.session_key}')
 
     order_payment = Payment(order=new_order, total_amount=total)
     order_payment.save()

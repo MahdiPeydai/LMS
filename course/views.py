@@ -2,11 +2,12 @@ from django.views import View
 from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
+from django.core.cache import cache
+
 from .models import Course, Category, UserEnrollment, LEVEL_CHOICES
 from checkout.models import CartItems
 
 from utils.get_all_courses import get_all_courses
-from utils.get_cart import get_cart
 from .forms import ReviewForm
 
 from django.db.models import Q
@@ -126,7 +127,7 @@ def course_detail(request, course_id):
     if request.user.is_authenticated:
         context['is_enrolled'] = UserEnrollment.objects.filter(user=request.user, course=course).exists()
 
-    cart = get_cart(request)
+    cart = cache.get(f'cart_session_{request.session.session_key}')
     if CartItems.objects.filter(cart=cart, course=course).exists():
         context['in_cart'] = True
 
