@@ -16,7 +16,7 @@ def instructors(request):
         context['instructors'].append({
             'instructor': instructor,
             'instructor_courses': instructor.course_set.count(),
-            'enrolled_courses': User.objects.filter(userenrollment__course__in=instructor.course_set.all()).count()
+            'enrolled_courses': User.objects.filter(enrollments__course__in=instructor.course_set.all()).count()
         })
     return render(request, 'instructor/instructors.html', context)
 
@@ -27,7 +27,7 @@ def instructor_profile(request, instructor_id):
         'instructor': instructor,
         'courses': [],
         'courses_number': instructor.course_set.count(),
-        'courses_enrolled': User.objects.filter(userenrollment__course__in=instructor.course_set.all()).count(),
+        'courses_enrolled': User.objects.filter(enrollments__course__in=instructor.course_set.all()).count(),
     }
     for course in instructor.course_set.all():
         context['courses'].append({
