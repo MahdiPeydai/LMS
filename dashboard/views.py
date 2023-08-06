@@ -102,7 +102,7 @@ class PasswordChange(View):
 @login_required
 def user_courses(request):
     user = request.user
-    courses = Course.objects.filter(userenrollment__user=user)
+    courses = Course.objects.filter(enrollments__user=user)
     context = {
         'courses': [],
         'is_instructor': user.groups.filter(name='Instructors').exists(),
