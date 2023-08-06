@@ -9,7 +9,7 @@
 {% block dashboard_content %}
     <div class="d-flex row justify-content-center justify-content-md-start">
         {% for course in courses %}
-            <div class="col-8 col-sm-7 col-md-6 col-lg-4 col-xl-3">
+            <div class="col-8 col-sm-7 col-md-6 col-lg-3 col-xl-4">
                 <div class="tpcourse mb-40">
                     <div class="tpcourse__thumb p-relative w-img fix">
                         <a href="{% url 'course_detail' course_id=course.course.id %}"><img src="{{ course.course.image.url }}" alt="course-thumb" style="width: 100%; height: 300px"></a>
