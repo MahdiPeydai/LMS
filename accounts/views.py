@@ -27,7 +27,6 @@ class Register(View):
             else:
                 guest_cart = cache.get(f'cart_session_{request.session.session_key}')
                 cache.delete(f'cart_session_{request.session.session_key}')
-                Guest.objects.filter(session_id=request.session.session_key).delete()
                 request.session.flush()
             user = form.save()
             auth_login(request, user)
@@ -62,7 +61,6 @@ class Login(View):
             else:
                 guest_cart = cache.get(f'cart_session_{request.session.session_key}')
                 cache.delete(f'cart_session_{request.session.session_key}')
-                Guest.objects.filter(session_id=request.session.session_key).delete()
                 request.session.flush()
             auth_login(request, user)
             user_cart = Cart.objects.filter(user_type=ContentType.objects.get_for_model(user), user_id=user.id).first()
