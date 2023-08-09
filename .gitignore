@@ -1,5 +1,6 @@
 __pycache__/
 /.env
+/dist/
 /static/
 node_modules
 venv
