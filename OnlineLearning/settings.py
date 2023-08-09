@@ -18,7 +18,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -28,8 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8585']
 
 # Application definition
 
@@ -49,7 +48,7 @@ INSTALLED_APPS = [
     'ckeditor'
 ]
 
-CKEDITOR_BASEPATH = '/static/dist/ckeditor/ckeditor/'  # Adjust the path to your CKEditor folder
+CKEDITOR_BASEPATH = '/static/ckeditor/ckeditor/'  # Adjust the path to your CKEditor folder
 CKEDITOR_CONFIGS = {
     'default': {
         'toolbar': 'Full',  # Set the toolbar to the full version
@@ -59,12 +58,14 @@ CKEDITOR_CONFIGS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.middleware.cache.UpdateCacheMiddleware",
     'django.middleware.common.CommonMiddleware',
+    "django.middleware.cache.FetchFromCacheMiddleware",
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'checkout.middleware.GuestSession'
+    'checkout.middleware.GuestSession',
 ]
 
 ROOT_URLCONF = 'OnlineLearning.urls'
@@ -88,29 +89,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'OnlineLearning.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('MYSQL_DB'),
-        'USER': os.getenv('MYSQL_USER'),
-        'PASSWORD': os.getenv('MYSQL_PASSWORD'),
+        'NAME': os.getenv('MYSQL_DATABASE'),
+        'USER': 'root',
+        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
         'HOST': os.getenv('MYSQL_HOST'),
         'PORT': os.getenv('MYSQL_PORT'),
         'OPTIONS': {
+            'auth_plugin': 'caching_sha2_password',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
         }
     }
 }
 
-
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": "redis://redis:6379",
         "OPTIONS": {
             "db": "1",
             "parser_class": "redis.connection.PythonParser",
@@ -119,11 +119,9 @@ CACHES = {
     }
 }
 
-
 CACHE_MIDDLEWARE_ALIAS = 'default'
 CACHE_MIDDLEWARE_SECONDS = 10
 CACHE_MIDDLEWARE_KEY_PREFIX = 'LMS_cache'
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -143,7 +141,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -155,17 +152,16 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static/dist')
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'dist'),
+                    os.path.join(BASE_DIR, 'venv', 'lib', 'python3.11', 'site-packages', 'django', 'contrib', 'admin', 'static')]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
