@@ -1,0 +1,51 @@
+version: '3'
+services:
+    mysql:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: wontbeused
+        volumes:
+            - db_data:/var/lib/mysql
+        networks:
+            - backend
+    redis:
+        image: redis:latest
+        networks:
+            - backend
+    django_app:
+        build: .
+        command: gunicorn OnlineLearning.wsgi:application --bind 0.0.0.0:8000
+        volumes:
+            - ./:/var/www/html
+            - static_volume:/app/static
+            - media_volume:/var/www/html/media
+        depends_on:
+            - mysql
+            - redis
+        networks:
+            - backend
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        working_dir: /var/www/html/
+        depends_on:
+            - django_app
+        volumes:
+            - ./:/var/www/html/
+            - ./docker/nginx/conf.d:/etc/nginx/conf.d/
+            - static_volume:/var/www/html/static
+        ports:
+            - "8585:80"
+        networks:
+            - backend
+
+volumes:
+    db_data:
+        driver: local
+    static_volume:
+        driver: local
+    media_volume:
+        driver: local
+networks:
+    backend:
+        external: false
