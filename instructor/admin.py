@@ -6,7 +6,7 @@ from ckeditor.widgets import CKEditorWidget
 
 class InstructorAdmin(admin.ModelAdmin):
     formfield_overrides = {
-        models.TextField: {'widget': CKEditorWidget},
+        models.TextField: {'widget': CKEditorWidget()},
     }
 
 
