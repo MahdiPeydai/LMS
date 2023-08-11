@@ -1,8 +1,9 @@
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404, JsonResponse
+from django.http import Http404, JsonResponse, HttpRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.cache import cache
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Course, Category, UserEnrollment, LEVEL_CHOICES
@@ -17,6 +18,7 @@ import random
 import json
 
 from faker import Faker
+
 fake = Faker()
 
 
@@ -155,7 +157,7 @@ def review(request, course_id):
 
 
 class CourseAPI(View):
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def get(self, request, course_id=None):
         if course_id is None:
             courses = Course.objects.all()
@@ -166,7 +168,7 @@ class CourseAPI(View):
                 'duration': course.duration,
                 'level': course.level,
                 'price': course.price,
-                'image': course.image
+                'image': course.image.url
             } for course in courses]
             return JsonResponse(courses_list, safe=False)
         else:
@@ -181,25 +183,24 @@ class CourseAPI(View):
                 'duration': course.duration,
                 'level': course.level,
                 'price': course.price,
-                'image': course.image
+                'image': course.image.url
             }
             return JsonResponse(course_data)
 
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def post(self, request):
-        data = json.loads(request.body)
         course = Course.objects.create(
-            name=data.get('name'),
-            description=data.get('description'),
-            instructor=Instructor.objects.get(pk=data.get('instructor')),
-            duration=data.get('duration'),
-            level=data.get('level'),
-            price=data.get('price'),
-            image=data.get('image')
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+            instructor=Instructor.objects.get(pk=int(request.POST.get('instructor'))),
+            duration=int(request.POST.get('duration')),
+            level=int(request.POST.get('level')),
+            price=int(request.POST.get('price')),
+            image=request.FILES.get('image')
         )
         return JsonResponse({"message": "Course created successfully", "course_id": course.id}, status=201)
 
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def put(self, request, course_id):
         try:
             course = Course.objects.get(pk=course_id)
@@ -207,17 +208,16 @@ class CourseAPI(View):
             return JsonResponse({"error": "Course not found"}, status=404)
 
         data = json.loads(request.body)
-        course.name = data.get('name'),
-        course.description = data.get('description'),
-        course.instructor = Instructor.objects.get(pk=data.get('instructor')),
-        course.duration = data.get('duration'),
-        course.level = data.get('level'),
-        course.price = data.get('price'),
-        course.image = data.get('image')
+        course.name = data.get('name')
+        course.description = data.get('description')
+        course.instructor = Instructor.objects.get(pk=data.get('instructor'))
+        course.duration = data.get('duration')
+        course.level = data.get('level')
+        course.price = data.get('price')
         course.save()
         return JsonResponse({"message": "Course updated successfully"})
 
-    @csrf_exempt
+    @method_decorator(csrf_exempt)
     def delete(self, request, course_id):
         try:
             course = Course.objects.get(pk=course_id)
