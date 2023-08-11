@@ -40,7 +40,7 @@ class Course(models.Model):
     description = models.TextField(null=False)
     duration = models.IntegerField(null=False, help_text="ساعت")
     level = models.IntegerField(choices=LEVEL_CHOICES, null=False)
-    image = models.ImageField(upload_to='media/images/course/', validators=[validate_image_size], null=False)
+    image = models.ImageField(upload_to='images/course/', validators=[validate_image_size], null=False)
     price = models.IntegerField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

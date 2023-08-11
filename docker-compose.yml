@@ -18,7 +18,7 @@ services:
         volumes:
             - ./:/var/www/html
             - static_volume:/app/static
-            - media_volume:/var/www/html/media
+            - media_volume:/app/media
         depends_on:
             - mysql
             - redis
@@ -34,6 +34,7 @@ services:
             - ./:/var/www/html/
             - ./docker/nginx/conf.d:/etc/nginx/conf.d/
             - static_volume:/var/www/html/static
+            - media_volume:/var/www/html/media
         ports:
             - "8585:80"
         networks:

@@ -14,7 +14,7 @@ def validate_image_size(value):
 class Instructor(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={"groups": 2})
-    image = models.ImageField(upload_to='media/images/instructor/', validators=[validate_image_size], null=False)
+    image = models.ImageField(upload_to='images/instructor/', validators=[validate_image_size], null=False)
     short_description = models.TextField(max_length=200, null=False)
     biography = models.TextField(null=False)
     job_title = models.CharField(max_length=30, null=False)
