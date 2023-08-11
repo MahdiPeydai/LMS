@@ -4,4 +4,4 @@ __pycache__/
 /static/
 node_modules
 venv
-*/.DS_Store
+.DS_Store
