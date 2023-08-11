@@ -1,17 +1,23 @@
 from django.views import View
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.cache import cache
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Course, Category, UserEnrollment, LEVEL_CHOICES
+from instructor.models import Instructor
 from checkout.models import CartItems
+from django.db.models import Q
 
 from utils.get_all_courses import get_all_courses
 from .forms import ReviewForm
 
-from django.db.models import Q
 import random
+import json
+
+from faker import Faker
+fake = Faker()
 
 
 class Courses(View):
@@ -146,3 +152,76 @@ def review(request, course_id):
             return Http404
     else:
         return Http404
+
+
+class CourseAPI(View):
+    @csrf_exempt
+    def get(self, request, course_id=None):
+        if course_id is None:
+            courses = Course.objects.all()
+            courses_list = [{
+                'name': course.name,
+                'instructor': course.instructor.user.first_name + ' ' + course.instructor.user.last_name,
+                'description': course.description,
+                'duration': course.duration,
+                'level': course.level,
+                'price': course.price,
+                'image': course.image
+            } for course in courses]
+            return JsonResponse(courses_list, safe=False)
+        else:
+            try:
+                course = Course.objects.get(pk=course_id)
+            except Course.DoesNotExist:
+                return JsonResponse({"error": "Course not found"}, status=404)
+            course_data = {
+                'name': course.name,
+                'instructor': course.instructor.user.first_name + ' ' + course.instructor.user.last_name,
+                'description': course.description,
+                'duration': course.duration,
+                'level': course.level,
+                'price': course.price,
+                'image': course.image
+            }
+            return JsonResponse(course_data)
+
+    @csrf_exempt
+    def post(self, request):
+        data = json.loads(request.body)
+        course = Course.objects.create(
+            name=data.get('name'),
+            description=data.get('description'),
+            instructor=Instructor.objects.get(pk=data.get('instructor')),
+            duration=data.get('duration'),
+            level=data.get('level'),
+            price=data.get('price'),
+            image=data.get('image')
+        )
+        return JsonResponse({"message": "Course created successfully", "course_id": course.id}, status=201)
+
+    @csrf_exempt
+    def put(self, request, course_id):
+        try:
+            course = Course.objects.get(pk=course_id)
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+
+        data = json.loads(request.body)
+        course.name = data.get('name'),
+        course.description = data.get('description'),
+        course.instructor = Instructor.objects.get(pk=data.get('instructor')),
+        course.duration = data.get('duration'),
+        course.level = data.get('level'),
+        course.price = data.get('price'),
+        course.image = data.get('image')
+        course.save()
+        return JsonResponse({"message": "Course updated successfully"})
+
+    @csrf_exempt
+    def delete(self, request, course_id):
+        try:
+            course = Course.objects.get(pk=course_id)
+        except Course.DoesNotExist:
+            return JsonResponse({"error": "Course not found"}, status=404)
+        course.delete()
+        return JsonResponse({"message": "Course deleted successfully"}, status=204)
