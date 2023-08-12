@@ -98,8 +98,8 @@ DATABASES = {
         'NAME': os.getenv('MYSQL_DATABASE'),
         'USER': 'root',
         'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
-        'HOST': os.getenv('MYSQL_HOST'),
-        'PORT': os.getenv('MYSQL_PORT'),
+        'HOST': 'mysql',
+        'PORT': '3306',
         'OPTIONS': {
             'auth_plugin': 'caching_sha2_password',
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
