@@ -52,16 +52,17 @@ after that you need to exec django_app container and do migrations:
 <code>$ python3 manage.py migrate</code>
 <br>
 <br>
-after bundle the asset files(still in django_app containe):
+after bundle the asset files(still in django_app container):
 <br>
 <br>
+<code>$ npm install</code>
 <code>$ npm run build</code>
 <br>
 <br>
-then you need to collect static files from apps to static folder(still in django_app containe):
+then you need to collect static files from apps to static folder(still in django_app container):
 <br>
 <br>
-<code>$ python3 manage.py collectstati</code>
+<code>$ python3 manage.py collectstatic</code>
 <br>
 (maybe you should restart nginx container to apply changes)
 <br>
